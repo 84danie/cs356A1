@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,7 @@ public class IVoteService {
 	private boolean polling;
 	private Question question;
 	private Map<Choice,Integer> results;
-	private Map<Student,List<Choice>> submissions; //remove multi-map
+	private List<Submission> submissions; 
 
 	public IVoteService() {
 		polling = false;
@@ -17,8 +18,11 @@ public class IVoteService {
 	}
 
 	public boolean newQuestion(Question question){
-		this.question = question;
-		return true;
+		if(!polling){
+			this.question = question;
+			return true;
+		}
+		return false;
 	}
 
 	private boolean setup(){
@@ -27,7 +31,7 @@ public class IVoteService {
 			results = new HashMap<Choice,Integer>(choices.size());
 			for(Choice c : choices)
 				results.put(c,0);
-			submissions = new HashMap<Student,List<Choice>>();
+			submissions = new ArrayList<Submission>();
 			return true;
 		}
 		else
@@ -38,16 +42,17 @@ public class IVoteService {
 		return question.toString();
 
 	}
-	public boolean receiveAnswer(Student student, List<Choice> answers){
-		if(polling){
-			if(submissions.containsKey(student)){
-				List<Choice> previousAnswer = submissions.get(student);
-				for(Choice c : previousAnswer){
-					results.put(c, results.get(c) - 1);
+	public boolean receiveSubmission(Submission newSubmission){
+		if(isPolling()){
+			Submission student = newSubmission;
+			if(submissions.contains(student)){
+				List<Choice> previousAnswer = submissions.get(submissions.indexOf(student)).getChoices();
+				for(int i =0; i < previousAnswer.size(); i++){
+					results.put(previousAnswer.get(i), results.get(previousAnswer.get(i)) - 1);
 				}
 			}
-			submissions.put(student, answers);
-			for(Choice answer: answers)
+			submissions.add(newSubmission);
+			for(Choice answer: newSubmission.getChoices())
 				receiveAnswer(answer);
 			return true;
 		}
@@ -60,7 +65,7 @@ public class IVoteService {
 	}
 
 	public boolean beginPoll(){
-		if(!polling && question!=null){
+		if(!isPolling() && question!=null){
 			if(setup()){
 				polling = true;
 				return true;
@@ -70,12 +75,16 @@ public class IVoteService {
 	}
 
 	public boolean closePoll(){
-		if(polling){
+		if(isPolling()){
 			polling = false;
 			return true;
 		}
 		else
 			return false;
+	}
+	
+	public boolean isPolling(){
+		return polling;
 	}
 
 	public String displayResults(){

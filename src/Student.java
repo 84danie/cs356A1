@@ -11,8 +11,8 @@ public class Student implements Comparable<Student>{
 	public String toString(){
 		return id;
 	}
-	public boolean submitAnswers(IVoteService ivote, List<Choice> answers){
-		ivote.receiveAnswer(this,  answers);
+	public boolean sendSubmission(IVoteService ivote, List<Choice> answers){
+		ivote.receiveSubmission(new Submission(this,  answers));
 		return true;
 	}
 	

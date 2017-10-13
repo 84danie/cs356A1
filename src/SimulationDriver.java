@@ -22,16 +22,28 @@ public class SimulationDriver {
 		}
 		List<Choice> answers = new ArrayList<Choice>();
 		answers.add(new Choice('C',"4"));
-		student1.submitAnswers(ivote,answers);
+		student1.sendSubmission(ivote,answers);
 		answers = new ArrayList<Choice>();
 		answers.add(new Choice('A',"23"));
 	
-		student1.submitAnswers(ivote, answers);
-		//answers.remove(new Choice('A',"23"));
-		//student2.submitAnswers(ivote, answers);
+		student1.sendSubmission(ivote, answers);
+		answers.remove(new Choice('A',"23"));
+		student2.sendSubmission(ivote, answers);
 		
 		ivote.closePoll();
 		
+		System.out.println(ivote.displayResults());
+		choices.add(new Choice('D',"2x"));
+		ivote.newQuestion(new SingleAnswer("What is the derivative of x^2?",new Choice('D',"2x"),choices));
+		if(ivote.beginPoll()){
+			System.out.println(ivote.displayQuestion());
+		}
+		answers = new ArrayList<Choice>();
+		answers.add(new Choice('C',"4"));
+		answers.add(new Choice('C',"2x"));
+		student1.sendSubmission(ivote,answers);
+		
+		ivote.closePoll();
 		System.out.println(ivote.displayResults());
 	}
 
