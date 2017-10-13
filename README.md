@@ -1,2 +1,2 @@
-# cs480A1
-First assignment for CS 480 - Software Engineering.
+# cs356A1
+First assignment for CS 356 - Object Oriented Design and Programming
