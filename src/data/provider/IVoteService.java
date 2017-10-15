@@ -103,7 +103,8 @@ public class IVoteService {
 	 */
 	private boolean removeSubmission(Submission submission){
 		if(submissions.contains(submission)){
-			updateSubmissionResults(submission,-1);
+			Submission previousSubmission = submissions.get(submissions.indexOf(submission));
+			updateSubmissionResults(previousSubmission,-1);
 			submissions.remove(submissions.indexOf(submission));
 			return true;
 		}
