@@ -1,6 +1,7 @@
 package data.provider;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,8 @@ public class IVoteService {
 	public IVoteService() {
 		polling = false;
 		question = null;
-		results = null;
-		submissions = null;
+		results = new HashMap<Choice,Integer>();
+		submissions = new ArrayList<Submission>();
 	}
 
 	/**
@@ -57,10 +58,10 @@ public class IVoteService {
 	private boolean setup(){
 		if(question!=null){
 			List<Choice> choices = question.getChoices();
-			results = new HashMap<Choice,Integer>(choices.size());
+			results.clear();
 			for(Choice c : choices)
 				results.put(c,0);
-			submissions = new ArrayList<Submission>();
+			submissions.clear();
 			return true;
 		}
 		else
@@ -72,7 +73,10 @@ public class IVoteService {
 	 * @return a String representation of the current question and its candidate choices
 	 */
 	public String displayQuestion(){
-		return question.toString();
+		if(question!=null)
+			return question.toString();
+		else
+			return "No question is currently set.";
 
 	}
 	/**
@@ -165,7 +169,21 @@ public class IVoteService {
 	 * @return a string representation of the submission results. 
 	 */
 	public String displayResults(){
-		return results.toString();
+		
+		int longest = 0;
+		for(Choice c : getChoices())
+			if (c.getStatement().length()>longest)
+				longest = c.getStatement().length();
+			
+		String s = String.format("%-"+longest+"s|%1s\n","Choice","Number of times selected");
+		Iterator it = results.entrySet().iterator();
+		
+		while(it.hasNext()){
+			Map.Entry pair = (Map.Entry)it.next();
+			s += String.format("%-"+longest+"s|%1d\n", pair.getKey(),pair.getValue());
+		}
+		
+		return s;
 
 	}
 	
