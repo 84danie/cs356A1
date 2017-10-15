@@ -168,5 +168,10 @@ public class IVoteService {
 		return results.toString();
 
 	}
+	
+	public List<Choice> getChoices(){
+		return question.getChoices();
+		
+	}
 
 }
