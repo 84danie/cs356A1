@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author danie
  *
  *This question represents a Question that only has 1 correct answer.
  */

@@ -1,11 +1,10 @@
 package data;
 
 /**
- * @author danie
  *
  *This class represents a possible answer choice to a Question. 
  *
- *Although Choice only holds a String, Choice was created 
+ *Choice class is implemented to provide readability and room for future features.
  *
  */
 public class Choice {

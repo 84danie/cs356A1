@@ -3,7 +3,6 @@ package data;
 import java.util.List;
 
 /**
- * @author Danielle Holzberger
  *
  *This class represents a Question that has several correct answers.
  */
@@ -16,9 +15,9 @@ public class MultipleAnswerQuestion implements Question{
 	/**
 	 * Constructor. Set the question, answers, and choices
 	 * 
-	 * @param question
-	 * @param answers
-	 * @param choices
+	 * @param question the question to be asked
+	 * @param answers the List of Choices representing the answer
+	 * @param choices the list of possible Choices
 	 */
 	public MultipleAnswerQuestion(String question, List<Choice> answers, List<Choice> choices) {
 		setQuestion(question);
@@ -28,6 +27,7 @@ public class MultipleAnswerQuestion implements Question{
 
 	/** 
 	 * Set the question.
+	 * @param question the new question
 	 */
 	@Override
 	public void setQuestion(String question) {
@@ -99,6 +99,11 @@ public class MultipleAnswerQuestion implements Question{
 		return s;
 	}
 
+	/** 
+	 * Get the answer to this Question.
+	 * 
+	 * @return a List of Choices representing the answer to this Question
+	 */
 	@Override
 	public List<Choice> getAnswer() {
 		return answers;

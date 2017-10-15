@@ -2,14 +2,11 @@ package data;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import data.provider.Student;
 
-
 /**
- * @author Danielle Holzberger
- *
+ * 
  *This class represents a submission that can be sent to an IVoteService. All data in a Submission
  *can be publicly accessed, but cannot be modified.
  *

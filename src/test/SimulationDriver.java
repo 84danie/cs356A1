@@ -10,9 +10,22 @@ import data.SingleAnswerQuestion;
 import data.provider.IVoteService;
 import data.provider.Student;
 
+/**
+ * Driver class for testing the IVoteService. Generates an array of Students, and tests an
+ * IVoteService instance with two questions of different question types. 
+ * 
+ * Candidate answers are randomly generated. The first test also randomly chooses a number of submissions
+ * that will be "resent", and randomly chooses students that will send such new submissions in order to
+ * test that the IVoteService updates submissions accordingly.
+ * 
+ * Changing the VERBOSE flag to true will also cause a list of all the submissions to be displayed
+ * after each test is completed.
+ *
+ */
 public class SimulationDriver {
 
-	private static final int NUM_STUDENTS = 10;
+	private static final int NUM_STUDENTS = 20; //number of students that will be used to send submissions
+	private static final boolean VERBOSE = false; //set this to true to see all the submissions
 	public static void main(String[] args) {
 		Student[] students = setupStudents(NUM_STUDENTS);
 
@@ -20,17 +33,23 @@ public class SimulationDriver {
 
 		Question question = setUpQuestion1();
 		ivote.newQuestion(question);
-		System.out.println("Question 1:\n\n"+ivote.displayQuestion());
+		System.out.println("***Question 1***\n\n"+ivote.displayQuestion());
+		System.out.println("The correct answer to this question is 'The Creator of Java.'");
 		System.out.println("Displaying Results for Question 1: ");
 		System.out.println(testQuestion1(ivote,students));
-		System.out.println(ivote.displaySubmissions());
+		if(VERBOSE){
+			System.out.println(ivote.displaySubmissions());
+		}
 
 		question = setUpQuestion2();
 		ivote.newQuestion(question);
-		System.out.println("Question 2:\n\n"+ivote.displayQuestion());
+		System.out.println("***Question 2***\n\n"+ivote.displayQuestion());
+		System.out.println("All three answer choices are correct in this question.");
 		System.out.println("Displaying Results for Question 2: ");
 		System.out.println(testQuestion2(ivote,students));
-		System.out.println(ivote.displaySubmissions());
+		if(VERBOSE){
+			System.out.println(ivote.displaySubmissions());
+		}
 	}
 	public static Student[] setupStudents(final int numStudents){
 		Student[] students = new Student[numStudents];
@@ -74,8 +93,7 @@ public class SimulationDriver {
 		//test to make sure only the last submissions sent by a student are counted
 		//pick a random number of new submissions to send
 		int newSubmissions = r.nextInt(NUM_STUDENTS)+1;
-		String status = "UH OH, some students are changing their answers."
-						+ " Total Submissions to be re-sent: " + newSubmissions + "\n";
+		String status = newSubmissions + " submissions were resent. Here are the final results:\n";
 		
 		for(int i =0; i < newSubmissions; i++){
 			//randomly select a student that wants to change their answer (a student may change their answers several times!)
@@ -114,7 +132,7 @@ public class SimulationDriver {
 				for(int i = 1; i <= numChoices; i++){
 					int choice = 0;
 					
-					//not gauranteed to select numChoices since the same choice may be selected
+					//not guaranteed to select numChoices since the same choice may be selected
 					//good test of how submissions with redundant answer choices are handled
 					choice = r.nextInt(choices.size());
 					answers.add(choices.get(choice));

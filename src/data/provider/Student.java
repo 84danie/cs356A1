@@ -1,6 +1,5 @@
 package data.provider;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import data.Choice;
@@ -8,7 +7,6 @@ import data.Submission;
 
 
 /**
- * @author Danielle Holzberger
  *
  *This class represents a student that can send submissions to an IVoteService.
  *
@@ -27,7 +25,7 @@ public class Student {
 		this.id = UUID.randomUUID().toString();
 	}
 	/** 
-	 * @return a string representation of this Student's id
+	 * @return the first 5 characters of this Student's id as a String
 	 */
 	@Override
 	public String toString(){

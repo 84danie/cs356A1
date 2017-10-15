@@ -2,11 +2,10 @@ package data;
 import java.util.List;
 
 /**
- * @author Danielle Holzberger
  * 
  * Interface for Question
  * 
- * Classes that implement Question generally have a question that is being asked, possible
+ * Classes that implement Question have a question that is being asked, possible
  * answers to that question, and at least 1 answer to the question. 
  *
  */

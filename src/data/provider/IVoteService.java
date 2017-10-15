@@ -10,14 +10,13 @@ import data.Question;
 import data.Submission;
 
 /**
- * @author Danielle Holzberger
  * 
  * Class that simulates the iVote service. An IVoteService is configured with a question,
  * and can accept submissions from Students while polling.
  * 
  * The interaction with an IVoteService is restricted to setting the Question, opening and closing a
  * poll, accessing the Question choices, and getting the statistics. Only Students may send Submissions, 
- * and all Submissions are handled internally.
+ * and all Submissions are handled internally. 
  */
 public class IVoteService {
 
@@ -200,28 +199,31 @@ public class IVoteService {
 	}
 
 	/**
-	 * Internal method for determining the number of correct Submissions received.
-	 * This is called by displayResults.
-	 * 
-	 * @return the total number of correct Submissions received
+	 * @return the total number of correct Submissions currently received
 	 */
-	private int getNumberOfCorrectStudents(){
+	public int getNumberOfCorrectStudents(){
 		int correct = 0;
-		boolean stillCorrect = true;
-
-		for(Submission s : submissions){
-			if(s.getChoices().size()==question.getAnswer().size()){
-				for(Choice c : s.getChoices()){
-					if(!question.getAnswer().contains(c))
-						stillCorrect  = false;
-				}
-				if(stillCorrect)
-					correct++;
-				stillCorrect = true;
-						
-			}
-		}
+		for(Submission s : submissions)
+			if(isCorrect(s))
+				correct++;
 		return correct;
+	}
+	/**
+	 * Internal method for checking if a Submission is correct. 
+	 * 
+	 * @param s the Submission to be checked
+	 * @return true if the choices in s equals the answer choice(s) for the current Question
+	 */
+	private boolean isCorrect(Submission s){
+		if(s.getChoices().size()==question.getAnswer().size()){
+			for(Choice c : s.getChoices()){
+				if(!question.getAnswer().contains(c))
+					return false;
+			}
+			return true;
+		}
+		return false;
+		
 	}
 
 	/**
