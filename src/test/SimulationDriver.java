@@ -1,8 +1,10 @@
 package test;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import data.Choice;
+import data.MultipleAnswerQuestion;
 import data.Question;
 import data.SingleAnswerQuestion;
 import data.provider.IVoteService;
@@ -10,53 +12,69 @@ import data.provider.Student;
 
 public class SimulationDriver {
 
+	private static final int NUM_STUDENTS = 40;
 	public static void main(String[] args) {
-		IVoteService ivote = new IVoteService();
-		
-		Student student1 = new Student();
-		System.out.println(student1);
-		Student student2 = new Student();
-		System.out.println(student2);
-		List<Choice> choices = new ArrayList<Choice>();
-		choices.add(new Choice("A 23"));
-		choices.add(new Choice("B 3"));
-		choices.add(new Choice("C 4"));
-		Question question = new SingleAnswerQuestion("What is 2+2?",new Choice("C 4"),choices);
-		ivote.newQuestion(question);
-		
-		if(ivote.beginPoll()){
-			System.out.println(ivote.displayQuestion());
-		}
-		List<Choice> answers = new ArrayList<Choice>();
-		answers.add(new Choice("C 4"));
-		student1.sendSubmission(ivote,answers);
-		answers = new ArrayList<Choice>();
-		answers.add(new Choice("A 23"));
-	
-		student1.sendSubmission(ivote, answers);
-		answers.remove(new Choice("A 23"));
-		answers.add(new Choice("C 4"));
-		student2.sendSubmission(ivote, answers);
-		student1.sendSubmission(ivote, answers);
-		
-		ivote.closePoll();
-		
-		System.out.println(ivote.displayResults());
-		choices.add(new Choice("D 2x"));
-		ivote.newQuestion(new SingleAnswerQuestion("What is the derivative of x^2?",new Choice("D 2x"),choices));
-		if(ivote.beginPoll()){
-			System.out.println(ivote.displayQuestion());
-		}
-		answers = new ArrayList<Choice>();
-		answers.add(new Choice("C 4"));
-		answers.add(new Choice("D 2x"));
-		student1.sendSubmission(ivote,answers);
-
-		
-		ivote.closePoll();
-		System.out.println(ivote.displayResults());
+		 Student[] students = setupStudents(NUM_STUDENTS);
+		 
+		 IVoteService ivote = new IVoteService();
+		 
+		 Question question = setUpQuestion1();
+		 ivote.newQuestion(question);
+		 
+		 ivote.beginPoll();
+		 System.out.println(ivote.displayQuestion());
+		 
+		 Random r = new Random();
+		 List<Choice>choices = question.getChoices();
+		 for(Student student : students){
+			 int choice = r.nextInt(choices.size());
+			 List<Choice>answers = new ArrayList<Choice>();
+			 answers.add(choices.get(choice));
+			 System.out.println(student.sendSubmission(ivote, answers));
+		 }
+		 
+		 System.out.println(ivote.displayResults());
+		 
+		 int unsureStudents = r.nextInt(NUM_STUDENTS)+1;
+		 
+		 System.out.println("Students that want to change their answers: " + unsureStudents);
+		 for(int i =0; i < unsureStudents; i++){
+			 int unsureStudent = r.nextInt(NUM_STUDENTS);
+			 int choice = r.nextInt(choices.size());
+			 List<Choice>answers = new ArrayList<Choice>();
+			 answers.add(choices.get(choice));
+			 System.out.println(students[unsureStudent].sendSubmission(ivote,answers));
+		 }
+		 
+		 System.out.println(ivote.displayResults());
+		 
+		 ivote.closePoll();
+		 
+		 
+		 
+		 
+		 
 		
 		
+		
+	}
+	public static Student[] setupStudents(final int numStudents){
+		Student[] students = new Student[numStudents];
+		
+		for(int i=0;i<numStudents;i++)
+			students[i] = new Student();
+		
+		return students;
+	}
+	public static Question setUpQuestion1(){
+		 String questionString = "Who is James Gosling?";
+		 String answerString = "The creator of Java.";
+		 List<Choice> choices = new ArrayList<Choice>();
+		 choices.add(new Choice("The actor from La La Land and The Notebook."));
+		 choices.add(new Choice(answerString));
+		 choices.add(new Choice("I don't know."));
+		 
+		 return new SingleAnswerQuestion(questionString,new Choice(answerString),choices);
 	}
 
 }

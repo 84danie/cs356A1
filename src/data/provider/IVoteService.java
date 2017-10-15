@@ -164,7 +164,7 @@ public class IVoteService {
 	 * @return a string representation of the submission results. 
 	 */
 	public String displayResults(){
-		return submissions.toString()+"\n"+results.toString();
+		return results.toString();
 
 	}
 

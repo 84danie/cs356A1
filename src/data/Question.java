@@ -35,11 +35,6 @@ public interface Question {
 	 */
 	List<Choice> getChoices();	
 	/**
-	 * @param response
-	 * @return
-	 */
-	boolean isCorrect(Choice response);
-	/**
 	 * @return a string containing the question and all candidate choices
 	 */
 	String toString();

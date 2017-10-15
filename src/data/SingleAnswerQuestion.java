@@ -4,6 +4,7 @@ import java.util.List;
 /**
  * @author danie
  *
+ *This question represents a Question that only has 1 correct answer.
  */
 public class SingleAnswerQuestion implements Question{
 	private Choice answer;
@@ -27,17 +28,6 @@ public class SingleAnswerQuestion implements Question{
 	@Override
 	public String getQuestion() {
 		return question;
-	}
-
-	/* (non-Javadoc)
-	 * @see data.Question#isCorrect(data.Choice)
-	 */
-	@Override
-	public boolean isCorrect(Choice response) {
-		if(response.equals(answer))
-			return true;
-		else
-			return false;
 	}
 
 	/* (non-Javadoc)
