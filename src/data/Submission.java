@@ -8,33 +8,40 @@ import data.provider.Student;
 /**
  * @author danie
  *
+ *This class represents a submission that can be sent to an IVoteService. 
+ *
+ *NOTE: Submissions are immutable.
  */
 public class Submission {
 
 	private Student student;
 	private List<Choice> choices;
 	/**
-	 * @param student
-	 * @param choices
+	 * Constructor. 
+	 * @param student the Student submitting the submission
+	 * @param choices the choices the student selected
 	 */
 	public Submission(Student student, List<Choice> choices) {
 		this.student = student;
 		this.choices= new ArrayList<Choice>(choices);
 	}
 	/**
-	 * @return
+	 * @return the List of Choices selected in this Submission
 	 */
 	public List<Choice> getChoices(){
 		return choices;
 	}
 	/**
-	 * @return
+	 * @return the Student that sent this Submission
 	 */
 	public Student getStudent(){
 		return student;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/** 
+	 * Compares this Submission to another Object
+	 * 
+	 * @param obj the Object to be compared to
+	 * @return true if obj is equal to this Submission, false otherwise
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -52,8 +59,8 @@ public class Submission {
 			return false;
 		return true;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/** 
+	 * @return a String representation of this Submission
 	 */
 	@Override
 	public String toString() {
