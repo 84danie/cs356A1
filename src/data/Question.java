@@ -2,9 +2,12 @@ package data;
 import java.util.List;
 
 /**
- * @author danie
+ * @author Danielle Holzberger
  * 
- * Interface for Question classes
+ * Interface for Question
+ * 
+ * Classes that implement Question generally have a question that is being asked, possible
+ * answers to that question, and at least 1 answer to the question. 
  *
  */
 public interface Question {
@@ -29,6 +32,12 @@ public interface Question {
 	 * @return the string representation of the question
 	 */
 	String getQuestion();
+	
+	/**
+	 * Get the answer(s) to this Question.
+	 * @return the List<Choice> containing the answer(s
+	 */
+	List<Choice> getAnswer();
 	/**
 	 * Get all the possible candidate choices
 	 * @return the candidate choices

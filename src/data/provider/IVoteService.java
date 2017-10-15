@@ -10,10 +10,14 @@ import data.Question;
 import data.Submission;
 
 /**
- * @author danie
+ * @author Danielle Holzberger
  * 
  * Class that simulates the iVote service. An IVoteService is configured with a question,
  * and can accept submissions from Students while polling.
+ * 
+ * The interaction with an IVoteService is restricted to setting the Question, opening and closing a
+ * poll, accessing the Question choices, and getting the statistics. Only Students may send Submissions, 
+ * and all Submissions are handled internally.
  */
 public class IVoteService {
 
@@ -67,7 +71,7 @@ public class IVoteService {
 		else
 			return false;
 	}
-	
+
 
 	/**
 	 * @return a String representation of the current question and its candidate choices
@@ -81,7 +85,8 @@ public class IVoteService {
 	}
 	/**
 	 * Receives a submission if this IVoteService is currently polling answers. 
-	 * This method can only be called by Students. 
+	 * This method is protected so that it can only be called by data providers, namely
+	 * Students.
 	 * 
 	 * @param newSubmission the submission to be received
 	 * @return true if the submission was successfully received, false otherwise
@@ -109,7 +114,7 @@ public class IVoteService {
 		if(submissions.contains(submission)){
 			Submission previousSubmission = submissions.get(submissions.indexOf(submission));
 			updateSubmissionResults(previousSubmission,-1);
-			submissions.remove(submissions.indexOf(submission));
+			submissions.remove(submissions.indexOf(previousSubmission));
 			return true;
 		}
 		else
@@ -154,7 +159,7 @@ public class IVoteService {
 		else
 			return false;
 	}
-	
+
 	/**
 	 * @return the current polling status of this IVoteService
 	 */
@@ -164,32 +169,87 @@ public class IVoteService {
 
 	/**
 	 * Get the most recent results of this IVoteService. Can be called while polling answers, or after 
-	 * the poll has closed.
+	 * the poll has closed. If a question has not been set, no results are displayed.
+	 * 
+	 * The results include statistics for specific choices, as well as the total number of correct students.
 	 * 
 	 * @return a string representation of the submission results. 
 	 */
 	public String displayResults(){
-		
-		int longest = 0;
-		for(Choice c : getChoices())
-			if (c.getStatement().length()>longest)
-				longest = c.getStatement().length();
-			
+		int longest = getLongestChoiceLength();
+
 		String s = String.format("%-"+longest+"s|%1s\n","Choice","Number of times selected");
 		Iterator it = results.entrySet().iterator();
-		
 		while(it.hasNext()){
 			Map.Entry pair = (Map.Entry)it.next();
 			s += String.format("%-"+longest+"s|%1d\n", pair.getKey(),pair.getValue());
 		}
-		
+
+		s+="Number of Correct Submissions: "+getNumberOfCorrectStudents()+"\n";
 		return s;
 
 	}
-	
+	/**
+	 * @return String representation of all the current submissions
+	 */
+	public String displaySubmissions(){
+		String s = "";
+		for(Submission sub : submissions)
+			s+=sub+"\n";
+		return s;
+	}
+
+	/**
+	 * Internal method for determining the number of correct Submissions received.
+	 * This is called by displayResults.
+	 * 
+	 * @return the total number of correct Submissions received
+	 */
+	private int getNumberOfCorrectStudents(){
+		int correct = 0;
+		boolean stillCorrect = true;
+
+		for(Submission s : submissions){
+			if(s.getChoices().size()==question.getAnswer().size()){
+				for(Choice c : s.getChoices()){
+					if(!question.getAnswer().contains(c))
+						stillCorrect  = false;
+				}
+				if(stillCorrect)
+					correct++;
+				stillCorrect = true;
+						
+			}
+		}
+		return correct;
+	}
+
+	/**
+	 * Internal method to determine the longest Choice length in order to scale
+	 * the display.
+	 * 
+	 * @return the length of the longest Choice
+	 */
+	private int getLongestChoiceLength(){
+		int longest = 0;
+		for(Choice c : getChoices())
+			if (c.getStatement().length()>longest)
+				longest = c.getStatement().length();
+		return longest;
+	}
+
+	/**
+	 * Get the current choices that can be chosen for the current question.
+	 * If a question has not been set, returns null.
+	 * 
+	 * @return the current choices available, null if a question has not been set
+	 */
 	public List<Choice> getChoices(){
-		return question.getChoices();
-		
+		if(question!=null)
+			return question.getChoices();
+		else
+			return null;
+
 	}
 
 }

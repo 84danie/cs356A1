@@ -1,4 +1,5 @@
 package data;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,26 +13,28 @@ public class SingleAnswerQuestion implements Question{
 	private List<Choice> choices;
 	
 	/**
+	 * Constructor. Sets the question, answer and possible choices.
+	 * 
 	 * @param question
 	 * @param answer
 	 * @param choices
 	 */
 	public SingleAnswerQuestion(String question, Choice answer, List<Choice> choices) {
+		setQuestion(question);
 		setChoices(choices);
 		setAnswer(answer);
-		setQuestion(question);
 	}
 
-	/* (non-Javadoc)
-	 * @see data.Question#getQuestion()
+	/** 
+	 * @return String representation of the question being asked in this Question
 	 */
 	@Override
 	public String getQuestion() {
 		return question;
 	}
 
-	/* (non-Javadoc)
-	 * @see data.Question#setQuestion(java.lang.String)
+	/** 
+	 * Set the question.
 	 */
 	@Override
 	public void setQuestion(String question) {
@@ -39,24 +42,28 @@ public class SingleAnswerQuestion implements Question{
 		
 	}
 
-	/* (non-Javadoc)
-	 * @see data.Question#getChoices()
+	/** 
+	 * Get the choices for this Question.
+	 * @return List containing all possible choices for this Question
 	 */
 	@Override
 	public List<Choice> getChoices() {
 		return choices;
 	}
 
-	/* (non-Javadoc)
-	 * @see data.Question#setChoices(java.util.List)
+	/** 
+	 * Set the choices for this question. Note that this will
+	 * not automatically update the answers. SetAnswer must be
+	 * called in order to update the answers.
 	 */
 	@Override
 	public void setChoices(List<Choice> choices) {
 		this.choices = choices;
 	}
 
-	/* (non-Javadoc)
-	 * @see data.Question#setAnswer(data.Choice)
+	/** 
+	 * Set the answer for this question. If the answer Choice is not
+	 * one of the possible choices, answer is added to the choices.
 	 */
 	@Override
 	public void setAnswer(Choice answer) {
@@ -68,13 +75,17 @@ public class SingleAnswerQuestion implements Question{
 	}
 	
 	/**
-	 * @return
+	 * Get the answer for this question.
+	 * @return the List<Choice> containing the answer.
 	 */
-	public Choice getAnswer() {
-		return answer;
+	@Override
+	public List<Choice> getAnswer() {
+		List<Choice> answers = new ArrayList<Choice>();
+		answers.add(answer);
+		return answers;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/** 
+	 * @return a String representation of this Question
 	 */
 	@Override
 	public String toString(){

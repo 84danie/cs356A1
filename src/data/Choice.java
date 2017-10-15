@@ -3,7 +3,9 @@ package data;
 /**
  * @author danie
  *
- *This class represents a possible answer choice to a Question.
+ *This class represents a possible answer choice to a Question. 
+ *
+ *Although Choice only holds a String, Choice was created 
  *
  */
 public class Choice {
