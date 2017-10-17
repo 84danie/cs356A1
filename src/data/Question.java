@@ -34,7 +34,7 @@ public interface Question {
 	
 	/**
 	 * Get the answer(s) to this Question.
-	 * @return the List<Choice> containing the answer(s
+	 * @return the List<Choice> containing the answer(s)
 	 */
 	List<Choice> getAnswer();
 	/**

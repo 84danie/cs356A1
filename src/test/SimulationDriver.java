@@ -104,7 +104,6 @@ public class SimulationDriver {
 			List<Choice>answers = new ArrayList<Choice>();
 			//add the student's new choice to their answer buffer
 			answers.add(choices.get(choice));
-			
 			//send the submission
 			if(!students[unsureStudent].sendSubmission(ivote,answers)){
 				System.out.println("Error- a submission was not successfully sent");

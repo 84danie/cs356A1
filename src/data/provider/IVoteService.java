@@ -10,13 +10,12 @@ import data.Question;
 import data.Submission;
 
 /**
- * 
  * Class that simulates the iVote service. An IVoteService is configured with a question,
- * and can accept submissions from Students while polling.
+ * and can accept Submissions from Students while polling.
  * 
  * The interaction with an IVoteService is restricted to setting the Question, opening and closing a
  * poll, accessing the Question choices, and getting the statistics. Only Students may send Submissions, 
- * and all Submissions are handled internally. 
+ * and all Submissions are handled internally, including verifying the integrity of the Submission.
  */
 public class IVoteService {
 
@@ -83,15 +82,15 @@ public class IVoteService {
 
 	}
 	/**
-	 * Receives a submission if this IVoteService is currently polling answers. 
-	 * This method is protected so that it can only be called by data providers, namely
-	 * Students.
+	 * Receives a submission if this IVoteService is currently polling answers, and
+	 * the submission is valid. This method is protected so that it can only be 
+	 * called by data providers, namely Students.
 	 * 
 	 * @param newSubmission the submission to be received
 	 * @return true if the submission was successfully received, false otherwise
 	 */
 	protected boolean receiveSubmission(Submission newSubmission){
-		if(isPolling()){
+		if(isPolling() && isValid(newSubmission)){
 			removeSubmission(newSubmission); //remove in case a student submitted already
 			submissions.add(newSubmission);
 			updateSubmissionResults(newSubmission,1);
@@ -178,8 +177,10 @@ public class IVoteService {
 		int longest = getLongestChoiceLength();
 
 		String s = String.format("%-"+longest+"s|%1s\n","Choice","Number of times selected");
+		@SuppressWarnings("rawtypes")
 		Iterator it = results.entrySet().iterator();
 		while(it.hasNext()){
+			@SuppressWarnings("rawtypes")
 			Map.Entry pair = (Map.Entry)it.next();
 			s += String.format("%-"+longest+"s|%1d\n", pair.getKey(),pair.getValue());
 		}
@@ -244,6 +245,8 @@ public class IVoteService {
 	 * Get the current choices that can be chosen for the current question.
 	 * If a question has not been set, returns null.
 	 * 
+	 * NOTE: Choices can be retrieved regardless of the polling status.
+	 * 
 	 * @return the current choices available, null if a question has not been set
 	 */
 	public List<Choice> getChoices(){
@@ -252,6 +255,18 @@ public class IVoteService {
 		else
 			return null;
 
+	}
+	
+	/**
+	 * Internal method for checking if a Submission contains Choices that match
+	 * the current available Choices.
+	 * 
+	 * @param submission the Submission to be checked
+	 * @return true if submission contains choices matching the current available choices, false otherwise
+	 */
+	private boolean isValid(Submission submission){
+		return getChoices().containsAll(submission.getChoices());
+				
 	}
 
 }
