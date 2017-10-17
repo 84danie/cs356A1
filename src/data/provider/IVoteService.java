@@ -11,11 +11,14 @@ import data.Submission;
 
 /**
  * Class that simulates the iVote service. An IVoteService is configured with a question,
- * and can accept Submissions from Students while polling.
+ * and can accept Submissions from Students while polling. 
  * 
  * The interaction with an IVoteService is restricted to setting the Question, opening and closing a
  * poll, accessing the Question choices, and getting the statistics. Only Students may send Submissions, 
  * and all Submissions are handled internally, including verifying the integrity of the Submission.
+ * 
+ * Only the last VALID Submission received by a Student is counted. Submissions containing selections
+ * that are not one of the choices to the current question are omitted.
  */
 public class IVoteService {
 
@@ -224,7 +227,7 @@ public class IVoteService {
 			return true;
 		}
 		return false;
-		
+
 	}
 
 	/**
@@ -256,7 +259,7 @@ public class IVoteService {
 			return null;
 
 	}
-	
+
 	/**
 	 * Internal method for checking if a Submission contains Choices that match
 	 * the current available Choices.
@@ -265,8 +268,12 @@ public class IVoteService {
 	 * @return true if submission contains choices matching the current available choices, false otherwise
 	 */
 	private boolean isValid(Submission submission){
-		return getChoices().containsAll(submission.getChoices());
-				
+		for(Choice c : submission.getChoices()){
+			if(!question.getChoices().contains(c))
+				return false;
+		}
+		return true;
+
 	}
 
 }

@@ -2,6 +2,7 @@ package test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 import data.Choice;
 import data.MultipleAnswerQuestion;
@@ -11,47 +12,76 @@ import data.provider.IVoteService;
 import data.provider.Student;
 
 /**
- * Driver class for testing the IVoteService. Generates an array of Students, and tests an
+ * Driver class for testing the IVoteService. Generates an array of Students (size given by user), and tests an
  * IVoteService instance with two questions of different question types. 
  * 
- * Candidate answers are randomly generated. The first test also randomly chooses a number of submissions
+ * Candidate answers are randomly generated.The first test also randomly chooses a number of submissions
  * that will be "resent", and randomly chooses students that will send such new submissions in order to
- * test that the IVoteService updates submissions accordingly.
+ * test that the IVoteService updates submissions accordingly (and only records the last submission a student sent).
  * 
- * Changing the VERBOSE flag to true will also cause a list of all the submissions to be displayed
- * after each test is completed.
+ * The second test also attempts to send submissions containing erroneous choices. 
  *
+ * A user can run as many simulations as they desire, with the option of also displaying all submissions at the end
+ * of each test (not recommended for a large number of students).
  */
 public class SimulationDriver {
-
-	private static final int NUM_STUDENTS = 20; //number of students that will be used to send submissions
-	private static final boolean VERBOSE = false; //set this to true to see all the submissions
 	public static void main(String[] args) {
-		Student[] students = setupStudents(NUM_STUDENTS);
+		Scanner input = new Scanner(System.in);
+		boolean continueSimulating = true;
+		do{
+			final int NUM_STUDENTS = getNumberOfStudents(input);
+			boolean VERBOSE = askYesNo("Would you like to display ALL submissions after each question?",input);
+			Student[] students = setupStudents(NUM_STUDENTS);
 
-		IVoteService ivote = new IVoteService();
+			IVoteService ivote = new IVoteService();
 
-		Question question = setUpQuestion1();
-		ivote.newQuestion(question);
-		System.out.println("***Question 1***\n\n"+ivote.displayQuestion());
-		System.out.println("The correct answer to this question is 'The Creator of Java.'");
-		System.out.println("Displaying Results for Question 1: ");
-		System.out.println(testQuestion1(ivote,students));
-		if(VERBOSE){
-			System.out.println(ivote.displaySubmissions());
-		}
+			Question question = setUpQuestion1();
+			ivote.newQuestion(question);
+			System.out.println("***Question 1***\n\n"+ivote.displayQuestion());
+			System.out.println("The correct answer to this question is 'The Creator of Java.'");
+			System.out.println("Displaying Results for Question 1: ");
+			System.out.println(testQuestion1(ivote,students,NUM_STUDENTS));
+			if(VERBOSE)
+				System.out.println(ivote.displaySubmissions());
 
-		question = setUpQuestion2();
-		ivote.newQuestion(question);
-		System.out.println("***Question 2***\n\n"+ivote.displayQuestion());
-		System.out.println("All three answer choices are correct in this question.");
-		System.out.println("Displaying Results for Question 2: ");
-		System.out.println(testQuestion2(ivote,students));
-		if(VERBOSE){
-			System.out.println(ivote.displaySubmissions());
-		}
+			question = setUpQuestion2();
+			ivote.newQuestion(question);
+			System.out.println("***Question 2***\n\n"+ivote.displayQuestion());
+			System.out.println("All three answer choices are correct in this question.");
+			System.out.println("Displaying Results for Question 2: ");
+			System.out.println(testQuestion2(ivote,students,NUM_STUDENTS));
+			if(VERBOSE)
+				System.out.println(ivote.displaySubmissions());
+			
+			continueSimulating = askYesNo("Would you like to complete another simulation?",input);
+		}while(continueSimulating);
+		System.out.println("Thank you for choosing iVote!");
 	}
-	public static Student[] setupStudents(final int numStudents){
+	//Get the number of students to run the simulation with
+	private static int getNumberOfStudents(Scanner input){
+		System.out.print("How many students will be sending submissions? ");
+		int numStudents = input.nextInt();
+		input.nextLine(); //catch enter key
+		return numStudents;
+	}
+	//Utility function for obtaining yes/no answers to specified questions
+	private static boolean askYesNo(String question, Scanner input){
+		char display;
+		do{
+			System.out.print(question+" (Y/N) ");
+			String temp =  input.nextLine().toUpperCase();
+			if(!temp.isEmpty())
+				display = temp.charAt(0);
+			else
+				display = ' ';
+		}while(display!='Y' && display!= 'N');
+		if(display=='Y')
+			return true;
+		else
+			return false;
+	}
+	//Generate an array of students of a specified size
+	private static Student[] setupStudents(final int numStudents){
 		Student[] students = new Student[numStudents];
 
 		for(int i=0;i<numStudents;i++)
@@ -59,7 +89,8 @@ public class SimulationDriver {
 
 		return students;
 	}
-	public static Question setUpQuestion1(){
+	//Set up the first question for the simulation
+	private static Question setUpQuestion1(){
 		String questionString = "Who is James Gosling?";
 		String answerString = "The creator of Java.";
 		List<Choice> choices = new ArrayList<Choice>();
@@ -69,15 +100,16 @@ public class SimulationDriver {
 
 		return new SingleAnswerQuestion(questionString,new Choice(answerString),choices);
 	}
-
-	public static String testQuestion1(IVoteService ivote, Student[] students){
+	//Test the first question type (SingleAnswer). Also randomly chooses a number of submissions
+	//that will be "resent"
+	private static String testQuestion1(IVoteService ivote, Student[] students, final int NUM_STUDENTS){
 		ivote.beginPoll();
 		Random r = new Random();
 		List<Choice>choices = ivote.getChoices();
 		for(Student student : students){
 			//randomly select a choice
 			int choice = r.nextInt(choices.size());
-			
+
 			List<Choice>answers = new ArrayList<Choice>();
 			//add the student's answer to their answer buffer
 			answers.add(choices.get(choice));
@@ -86,21 +118,21 @@ public class SimulationDriver {
 				System.out.println("Error- a submission was not successfully sent");
 				System.exit(1);
 			}
+			
 		}
 		String initialResults = ivote.displayResults();
-		
+
 
 		//test to make sure only the last submissions sent by a student are counted
 		//pick a random number of new submissions to send
 		int newSubmissions = r.nextInt(NUM_STUDENTS)+1;
 		String status = newSubmissions + " submissions were resent. Here are the final results:\n";
-		
+
 		for(int i =0; i < newSubmissions; i++){
-			//randomly select a student that wants to change their answer (a student may change their answers several times!)
 			int unsureStudent = r.nextInt(NUM_STUDENTS); 
 			//randomly pick a choice (might be the same one as before, silly students!)
 			int choice = r.nextInt(choices.size()); 
-			
+
 			List<Choice>answers = new ArrayList<Choice>();
 			//add the student's new choice to their answer buffer
 			answers.add(choices.get(choice));
@@ -109,12 +141,15 @@ public class SimulationDriver {
 				System.out.println("Error- a submission was not successfully sent");
 				System.exit(1);
 			}
+			
+			
+			
 		}
 		ivote.closePoll();
 		return initialResults+"\n"+status+"\n"+ivote.displayResults();
 	}
-
-	public static String testQuestion2(IVoteService ivote, Student[] students){
+	//Test the second question type (MultipleAnswer). 
+	private static String testQuestion2(IVoteService ivote, Student[] students, final int NUM_STUDENTS){
 		ivote.beginPoll();
 		Random r = new Random();
 		List<Choice>choices = ivote.getChoices(); 
@@ -122,18 +157,16 @@ public class SimulationDriver {
 			List<Choice>answers = new ArrayList<Choice>(); 
 			//pick random number of choices
 			int numChoices = r.nextInt(choices.size())+1; 
-			
+
 			//for the students that select all the choices
 			if(numChoices == choices.size())
-				answers = choices;
+				answers = new ArrayList<Choice>(choices);
 			else {
 				//randomly select multiple choices
 				for(int i = 1; i <= numChoices; i++){
-					int choice = 0;
-					
 					//not guaranteed to select numChoices since the same choice may be selected
 					//good test of how submissions with redundant answer choices are handled
-					choice = r.nextInt(choices.size());
+					int choice = r.nextInt(choices.size());
 					answers.add(choices.get(choice));
 				}
 			}
@@ -142,12 +175,21 @@ public class SimulationDriver {
 				System.out.println("Error- a submission was not successfully sent");
 				System.exit(1);
 			}
+			
+			answers.add(new Choice("This is not one of the choices."));
+			if(student.sendSubmission(ivote, answers) == true){
+				System.out.println("Error- a submission with an erroneous answer was successfully sent.");
+				System.out.println(answers);
+				System.exit(1);
+			}
 		}
 		
+
 		ivote.closePoll();
 		return ivote.displayResults();
 	}
-	public static Question setUpQuestion2(){
+	
+	private static Question setUpQuestion2(){
 		String questionString = "Who is Linus Torvald?";
 		String answerString1 = "The creator of Linux.";
 		String answerString2 = "The creator of Git.";
@@ -156,7 +198,6 @@ public class SimulationDriver {
 		choices.add(new Choice(answerString1));
 		choices.add(new Choice(answerString2));
 		choices.add(new Choice(answerString3));
-
 		return new MultipleAnswerQuestion(questionString,choices,choices);
 	}
 
